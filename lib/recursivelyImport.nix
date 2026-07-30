@@ -1,17 +1,23 @@
-# https://github.com/llakala/synaptic-standard/blob/9365c4b7dc5c5d11685b0165bac88114c24df74b/demo/recursivelyImport.nix
+# Written by [Llakala](https://github.com/llakala)
 lib: let
-  inherit (lib) concatMap hasSuffix;
-  inherit (builtins) isPath filter readFileType;
+  inherit (builtins) attrNames concatMap readDir;
+  isNixFile = lib.hasSuffix ".nix";
 
-  expandIfFolder = elem:
-    if !isPath elem || readFileType elem != "directory"
-    then [elem]
-    else lib.filesystem.listFilesRecursive elem;
+  listNixFilesRecursive = let
+    recurse = folder: let
+      contents = readDir folder;
+    in
+      concatMap (
+        filename: let
+          type = contents.${filename};
+        in
+          if type == "regular" && isNixFile filename
+          then [(folder + "/${filename}")]
+          else if type == "directory"
+          then recurse (folder + "/${filename}")
+          else []
+      ) (attrNames contents);
+  in
+    recurse;
 in
-  list:
-    filter
-    # Filter out any path that doesn't look like `*.nix`. Don't forget to use
-    # toString to prevent copying paths to the store unnecessarily
-    (elem: !isPath elem || hasSuffix ".nix" (toString elem))
-    # Expand any folder to all the files within it.
-    (concatMap expandIfFolder list)
+  concatMap listNixFilesRecursive

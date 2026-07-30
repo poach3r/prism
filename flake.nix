@@ -2,7 +2,7 @@
   inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
   outputs = {nixpkgs, ...}: let
     forAllSystems = f: builtins.mapAttrs f nixpkgs.legacyPackages;
-  in {
+  in rec {
     lib = forAllSystems (_: pkgs: import ./default.nix {inherit nixpkgs pkgs;});
     devShell = forAllSystems (system: pkgs:
       pkgs.mkShell {
@@ -13,10 +13,10 @@
         ];
       });
 
-    #nixosConfigurations = lib.x86_64-linux.mkSystems {
-    #  desktop = {
-    #    paths = [./modules];
-    #  };
-    #};
+    nixosConfigurations = lib.x86_64-linux.mkSystems {
+      desktop = {
+        paths = [./modules];
+      };
+    };
   };
 }
