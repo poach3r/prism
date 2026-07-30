@@ -9,6 +9,7 @@
         buildInputs = [
           pkgs.nixd
           pkgs.alejandra
+          pkgs.harper
         ];
       });
 
