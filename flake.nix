@@ -3,7 +3,7 @@
   outputs = {nixpkgs, ...}: let
     forAllSystems = f: builtins.mapAttrs f nixpkgs.legacyPackages;
   in {
-    lib = forAllSystems (_: pkgs: import ./default.nix pkgs);
+    lib = forAllSystems (_: pkgs: import ./default.nix {inherit nixpkgs pkgs;});
     devShell = forAllSystems (system: pkgs:
       pkgs.mkShell {
         buildInputs = [
@@ -14,11 +14,7 @@
 
     #nixosConfigurations = lib.x86_64-linux.mkSystems {
     #  desktop = {
-    #    mkSystem = x: x;
-    #    modules = lib.x86_64-linux.recursivelyImport [./test];
-    #  };
-    #  laptop = {
-    #    modules = [(import ./hardware.nix) (import ./configuration.nix)];
+    #    paths = [./modules];
     #  };
     #};
   };

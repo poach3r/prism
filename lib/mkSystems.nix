@@ -1,17 +1,20 @@
 #  hosts ? {
-#    pkgs = null;
 #    paths = [];
 #    modules = [];
-#    nixosSystem = null;
 #    specialArgs = {};
 #    system = "x86_64-linux";
 #  },
-pkgs: recursivelyImport: hosts: let
+{
+  nixpkgs,
+  pkgs,
+  recursivelyImport,
+}: hosts: let
   inherit (builtins) mapAttrs concatLists;
+  mkSystem = import "${nixpkgs}/nixos/lib/eval-config.nix";
 in
   mapAttrs
   (name: value:
-    value.mkSystem or (abort "Host ${name} was never passed an instance of mkSystem. You can find this at $${nixpkgs}/nixos/lib/eval-config.nix.") {
+    mkSystem {
       inherit pkgs;
       modules =
         concatLists (map (module: let
