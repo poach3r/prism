@@ -73,7 +73,7 @@ in {
 `mkSystems` is a function which creates NixOS configurations based on the provided hosts.
 Each host accepts the following arguments:
 
-1. `paths ? []` module paths to be automatically imported and parsed. Modules not in the proper format or prefaced with an `_` will not be parsed.
+1. `paths ? []` module paths to be automatically imported and parsed. Only modules in the proper format (attribute sets with `all` and/or host keys) will be applied.
 2. `modules ? []` non-booyah modules to be manually imported.
 3. `specialArgs ? {}` arguments to be passed to every module.
 4. `system ? "x86_64-linux"` defines the system arch.
@@ -115,8 +115,8 @@ such as `pkgs`, and everything specified in `specialArgs`.
 
     # Enable powerOnBoot for my desktop
     desktop = {lib, ...}: {
-        hardware.bluetooth.powerOnBoot = lib.mkForce false;
-    }
+        hardware.bluetooth.powerOnBoot = lib.mkForce true;
+    };
 }
 ```
 
