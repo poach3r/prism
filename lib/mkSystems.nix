@@ -25,6 +25,6 @@ in
         ]) (recursivelyImport value.paths or []))
         ++ (value.modules or []);
       specialArgs = value.specialArgs or {};
-      system = value.system or "x86_64-linux.default";
+      system = value.system or "x86_64-linux";
     })
   hosts
