@@ -6,7 +6,7 @@
     lib = forAllSystems (_: pkgs: import ./default.nix {inherit nixpkgs pkgs;});
     devShell = forAllSystems (system: pkgs:
       pkgs.mkShell {
-        buildInputs = [
+        nativeBuildInputs = [
           pkgs.nixd
           pkgs.alejandra
           pkgs.harper
