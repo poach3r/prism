@@ -14,7 +14,7 @@
 in
   mapAttrs
   (name: value:
-    mkSystem {
+    value.mkSystem or mkSystem {
       inherit pkgs;
       modules =
         concatMap (module: let

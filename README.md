@@ -77,6 +77,7 @@ Each host accepts the following arguments:
 2. `modules ? []` non-booyah modules to be manually imported.
 3. `specialArgs ? {}` arguments to be passed to every module.
 4. `system ? "x86_64-linux"` defines the system arch.
+5. `mkSystem ? import "${nixpkgs}/nixos/lib/eval-config.nix"` is the function used internally to create the system. If you're on Darwin this should be set to `nix-darwin.lib.darwinSystem`.
 
 ### Example
 ```nix
@@ -85,7 +86,6 @@ nixosConfigurations = mkSystems {
         paths = [./modules];
         modules = [hjem.nixosModules.default];
         specialArgs = {inherit myPkgs;};
-        system = "x86_64-linux";
     };
 }
 ```
