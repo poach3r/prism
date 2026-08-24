@@ -98,25 +98,26 @@ paths.
 Modules are now defined as attribute sets with host dependant configuration.
 Creating an attribute set for a host with typical NixOS configuration inside
 will only apply it to that host. Additionally, the host `all` can be used
-to apply it to all hosts. Host configurations are able to be passed arguments
-such as `pkgs`, and everything specified in `specialArgs`.
+to apply it to all hosts. The `these` key applies its configuration to every
+host that is explicitly configured in the same module, while `others` applies
+to every host **not** configured in it. Host configurations are able to be
+passed arguments such as `pkgs`, `lib`, and everything specified in `specialArgs`.
 
 ### Example
 `bluetooth.nix`
 ```nix
 {
-    # Enable bluetooth and powerOnBoot for all hosts.
-    all = {
-        hardware.bluetooth = {
-            enable = true;
-            powerOnBoot = false;
-        };
+    # Enable bluetooth on my laptop and desktop.
+    these = {pkgs, ...}: {
+      environment.systemPackages = [pkgs.blueman];
+      hardware.bluetooth.enable = true;
     };
 
-    # Enable powerOnBoot for my desktop
-    desktop = {lib, ...}: {
-        hardware.bluetooth.powerOnBoot = lib.mkForce true;
-    };
+    # Dummy configuration for `these`.
+    laptop = {};
+    
+    # Enable powerOnBoot for my desktop, but not my laptop to save battery life.
+    desktop.hardware.bluetooth.powerOnBoot = true;
 }
 ```
 
