@@ -13,13 +13,13 @@
   mkSystem = import "${nixpkgs}/nixos/lib/eval-config.nix";
 in
   mapAttrs
-  (name: value:
+  (name: value: let
+    importedModules = map import (recursivelyImport value.paths or []);
+  in
     value.mkSystem or mkSystem {
       inherit pkgs;
       modules =
-        concatMap (module: let
-          importedModule = import module;
-        in
+        concatMap (importedModule:
           [
             (importedModule.all or {})
           ]
@@ -31,7 +31,8 @@ in
           ])
           ++ [
             (importedModule."${name}" or {})
-          ]) (recursivelyImport value.paths or [])
+          ])
+        importedModules
         ++ (value.modules or []);
       specialArgs = value.specialArgs or {};
       system = value.system or "x86_64-linux";
