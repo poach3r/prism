@@ -2,7 +2,7 @@
   nixpkgs ? null,
   pkgs ?
     if (nixpkgs == null)
-    then abort "booyah hasn't been passed either nixpkgs or pkgs."
+    then abort "prism hasn't been passed either nixpkgs or pkgs."
     else
       builtins.warn "Not explicitly passing pkgs to booyah may result in an additional instance being created, decreasing performance."
       (import nixpkgs {system = "x86_64-linux";}),
