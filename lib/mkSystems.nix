@@ -9,7 +9,7 @@
   pkgs,
   recursivelyImport,
 }: hosts: let
-  inherit (builtins) mapAttrs concatMap hasAttr;
+  inherit (builtins) mapAttrs concatMap hasAttr isAttrs;
   mkSystem = import "${nixpkgs}/nixos/lib/eval-config.nix";
 in
   mapAttrs
@@ -20,17 +20,21 @@ in
       inherit pkgs;
       modules =
         concatMap (importedModule:
-          [
-            (importedModule.all or {})
-          ]
-          ++ (pkgs.lib.optionals (hasAttr "these" importedModule && hasAttr name importedModule) [
-            importedModule.these
-          ])
-          ++ (pkgs.lib.optionals (hasAttr "others" importedModule && !(hasAttr name importedModule)) [
-            importedModule.others
-          ])
-          ++ [
-            (importedModule."${name}" or {})
+          if isAttrs importedModule
+          then
+            [
+              (importedModule.all or {})
+            ]
+            ++ (pkgs.lib.optionals (hasAttr "these" importedModule && hasAttr name importedModule) [
+              importedModule.these
+            ])
+            ++ (pkgs.lib.optionals (hasAttr "others" importedModule && !(hasAttr name importedModule)) [
+              importedModule.others
+            ])
+            ++ [
+              (importedModule."${name}" or {})
+            ]
+          else [
           ])
         importedModules
         ++ (value.modules or []);
