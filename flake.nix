@@ -19,8 +19,14 @@
       };
   in
     nixhooks.lib.withHooks {
-      hooks = forAllSystems (system: _: {inherit (nixhooks.lib.${system}.presets) alejandra commitlint;});
-      lib = forAllSystems (_: pkgs: mkLib {inherit nixpkgs pkgs;});
+      hooks = forAllSystems (system: _: {
+        inherit (nixhooks.lib.${system}.presets) alejandra commitlint;
+        settings = {
+          parallel = true;
+          tangled.enable = true;
+        };
+      });
+      lib = mkLib {inherit nixpkgs;};
       devShell = forAllSystems (system: pkgs:
         pkgs.mkShell {
           nativeBuildInputs = [

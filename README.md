@@ -26,7 +26,7 @@ refracted) into various different configurations.
 ```nix
 { 
     outputs = {nixpkgs, prism, ...}: {
-        nixosConfigurations = prism.lib.x86_64-linux.mkSystems {
+        nixosConfigurations = prism.lib.mkSystems {
             foo = {
                 # ...
             };
@@ -49,8 +49,7 @@ npins add forgejo codeberg.org poacher prism -b main
 let 
     inherit (sources) nixpkgs;
     sources = import ./npins;
-    pkgs = import nixpkgs {}
-    prism = import sources.prism { inherit nixpkgs pkgs; };
+    prism = import sources.prism { inherit nixpkgs; };
 in {
     # ...
 }
@@ -81,7 +80,8 @@ Each host accepts the following arguments:
 2. `modules ? []` non-prism modules to be manually imported.
 3. `specialArgs ? {}` arguments to be passed to every module.
 4. `system ? "x86_64-linux"` defines the system arch.
-5. `mkSystem ? import "${nixpkgs}/nixos/lib/eval-config.nix"` is the function used internally to create the system. If you're on Darwin this should be set to `nix-darwin.lib.darwinSystem`.
+5. `pkgs ? nixpkgs.legacyPackages.${system}` is the pkgs used by this host. 
+6. `mkSystem ? import "${nixpkgs}/nixos/lib/eval-config.nix"` is the function used internally to create the system. If you're on Darwin this should be set to `nix-darwin.lib.darwinSystem`.
 
 ### Example
 ```nix
