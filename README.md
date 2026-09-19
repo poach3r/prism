@@ -127,7 +127,7 @@ passed arguments such as `pkgs`, `lib`, and everything specified in `specialArgs
 
 # Living Examples
 `prism` is used in the following configs:
-1. [mine](https://codeberg.org/poacher/nix-dotfiles)
+1. [mine](https://tangled.org/poacher.dev/nixos-config)
 2. [zushi](https://codeberg.org/zushi/nixos-config)
 
 If you would like your config added here then please open an issue or PR.
