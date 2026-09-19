@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "nixhooks": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789628325,
+        "narHash": "sha256-/cLDZ7DQdTFwKUUdCa08PDIh6smFJvecQqHLO1QRIXo=",
+        "ref": "refs/heads/main",
+        "rev": "b4d99e37aa4ef5b23621dfff7d95135283d14d77",
+        "revCount": 34,
+        "type": "git",
+        "url": "https://tangled.org/poacher.dev/nixhooks"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://tangled.org/poacher.dev/nixhooks"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1785975029,
@@ -18,6 +38,7 @@
     },
     "root": {
       "inputs": {
+        "nixhooks": "nixhooks",
         "nixpkgs": "nixpkgs"
       }
     }

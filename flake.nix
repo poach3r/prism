@@ -1,21 +1,33 @@
 {
-  inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
-  outputs = {nixpkgs, ...}: let
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
+    nixhooks = {
+      url = "git+https://tangled.org/poacher.dev/nixhooks";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  outputs = {
+    nixpkgs,
+    nixhooks,
+    ...
+  }: let
     forAllSystems = f: builtins.mapAttrs f nixpkgs.legacyPackages;
     mkLib = args:
       (import ./default.nix args)
       // {
         __functor = self: overrides: mkLib (args // overrides);
       };
-  in {
-    lib = forAllSystems (_: pkgs: mkLib {inherit nixpkgs pkgs;});
-    devShell = forAllSystems (system: pkgs:
-      pkgs.mkShell {
-        nativeBuildInputs = [
-          pkgs.nixd
-          pkgs.alejandra
-          pkgs.harper
-        ];
-      });
-  };
+  in
+    nixhooks.lib.withHooks {
+      hooks = forAllSystems (system: _: {inherit (nixhooks.lib.${system}.presets) alejandra commitlint;});
+      lib = forAllSystems (_: pkgs: mkLib {inherit nixpkgs pkgs;});
+      devShell = forAllSystems (system: pkgs:
+        pkgs.mkShell {
+          nativeBuildInputs = [
+            pkgs.nixd
+            pkgs.alejandra
+            pkgs.harper
+          ];
+        });
+    };
 }
