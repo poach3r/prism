@@ -1,6 +1,10 @@
-{nixpkgs ? abort "prism hasn't been passed nixpkgs."}: let
-  recursivelyImport = import ./lib/recursivelyImport.nix (import "${nixpkgs}/lib");
+let
+  recursivelyImport = import ./lib/recursivelyImport {inherit (npf) hasSuffix;};
+  npf = import ./lib/nixpkgs; # Functions of pkgs.lib
 in {
   inherit recursivelyImport;
-  mkSystems = import ./lib/mkSystems.nix {inherit nixpkgs recursivelyImport;};
+  mkSystems = import ./lib/mkSystems.nix {
+    inherit (npf) optional;
+    inherit recursivelyImport;
+  };
 }

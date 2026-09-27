@@ -1,0 +1,45 @@
+{
+  "entries": {
+    "apps-aarch64-darwin": {
+      "nixhooks": "sha256-uPtsaFf7BKQEh6UqXiDO979CBm5FpRZrKuhrBDNR00Y="
+    },
+    "apps-aarch64-linux": {
+      "nixhooks": "sha256-uPtsaFf7BKQEh6UqXiDO979CBm5FpRZrKuhrBDNR00Y="
+    },
+    "apps-x86_64-linux": {
+      "nixhooks": "sha256-uPtsaFf7BKQEh6UqXiDO979CBm5FpRZrKuhrBDNR00Y="
+    },
+    "devshell-aarch64-darwin": {
+      "nixhooks": "sha256-uPtsaFf7BKQEh6UqXiDO979CBm5FpRZrKuhrBDNR00Y=",
+      "nixpkgs": "sha256-EVMNYv7hYDDD9TGVT/hIyTYgpiXA8y3m5xIEIxuGNU0="
+    },
+    "devshell-aarch64-linux": {
+      "nixhooks": "sha256-uPtsaFf7BKQEh6UqXiDO979CBm5FpRZrKuhrBDNR00Y=",
+      "nixpkgs": "sha256-EVMNYv7hYDDD9TGVT/hIyTYgpiXA8y3m5xIEIxuGNU0="
+    },
+    "devshell-x86_64-linux": {
+      "nixhooks": "sha256-uPtsaFf7BKQEh6UqXiDO979CBm5FpRZrKuhrBDNR00Y=",
+      "nixpkgs": "sha256-EVMNYv7hYDDD9TGVT/hIyTYgpiXA8y3m5xIEIxuGNU0="
+    }
+  },
+  "resolved": {
+    "sha256-EVMNYv7hYDDD9TGVT/hIyTYgpiXA8y3m5xIEIxuGNU0=": {
+      "lastModified": 1790510107,
+      "narHash": "sha256-EVMNYv7hYDDD9TGVT/hIyTYgpiXA8y3m5xIEIxuGNU0=",
+      "owner": "nixos",
+      "repo": "nixpkgs",
+      "rev": "3181085bfd08663b6b9e60bc7a8395c2aaa741bd",
+      "type": "github"
+    },
+    "sha256-uPtsaFf7BKQEh6UqXiDO979CBm5FpRZrKuhrBDNR00Y=": {
+      "lastModified": 1790206540,
+      "narHash": "sha256-uPtsaFf7BKQEh6UqXiDO979CBm5FpRZrKuhrBDNR00Y=",
+      "ref": "refs/heads/main",
+      "rev": "c7e590f7ad0eb099876254c1a27de1e51cc9fa2d",
+      "revCount": 40,
+      "type": "git",
+      "url": "https://tangled.org/poacher.dev/nixhooks"
+    }
+  },
+  "version": 1
+}

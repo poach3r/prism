@@ -1,45 +1,63 @@
 {
   "nodes": {
     "nixhooks": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
       "locked": {
-        "lastModified": 1789628325,
-        "narHash": "sha256-/cLDZ7DQdTFwKUUdCa08PDIh6smFJvecQqHLO1QRIXo=",
-        "ref": "refs/heads/main",
-        "rev": "b4d99e37aa4ef5b23621dfff7d95135283d14d77",
-        "revCount": 34,
-        "type": "git",
-        "url": "https://tangled.org/poacher.dev/nixhooks"
+        "lastModified": 1625557891,
+        "narHash": "sha256-O8/MWsPBGhhyPoPLHZAuoZiiHo9q6FLlEeIDEXuj6T4=",
+        "owner": "divnix",
+        "repo": "blank",
+        "rev": "5a5d2684073d9f563072ed07c871d577a6c614a8",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://tangled.org/poacher.dev/nixhooks"
+        "owner": "divnix",
+        "repo": "blank",
+        "type": "github"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1785975029,
-        "narHash": "sha256-X44cn5rzytELc3NNoQsh0aLkjWA/QzPfc6HPQmsG3sU=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "70ce234312134a463ba7728e94da2486a1d237ac",
+        "lastModified": 1625557891,
+        "narHash": "sha256-O8/MWsPBGhhyPoPLHZAuoZiiHo9q6FLlEeIDEXuj6T4=",
+        "owner": "divnix",
+        "repo": "blank",
+        "rev": "5a5d2684073d9f563072ed07c871d577a6c614a8",
         "type": "github"
       },
       "original": {
-        "owner": "nixos",
-        "ref": "nixpkgs-unstable",
-        "repo": "nixpkgs",
+        "owner": "divnix",
+        "repo": "blank",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
         "nixhooks": "nixhooks",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "scoped-flakes": "scoped-flakes"
+      }
+    },
+    "scoped-flakes": {
+      "inputs": {
+        "nixhooks": [
+          "nixhooks"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790542265,
+        "narHash": "sha256-03NsZKhPnve2uls3aEK2Miv6smkGKpdr8hEDY4eNtj4=",
+        "ref": "refs/heads/main",
+        "rev": "3a91fbc84478f2caff0685fb005b94c5a6ee77fe",
+        "revCount": 4,
+        "type": "git",
+        "url": "https://tangled.org/poacher.dev/scoped-flakes"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://tangled.org/poacher.dev/scoped-flakes"
       }
     }
   },
