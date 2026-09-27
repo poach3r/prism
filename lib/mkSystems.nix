@@ -9,7 +9,7 @@
   nixpkgs,
   recursivelyImport,
 }: hosts: let
-  inherit (builtins) mapAttrs concatMap hasAttr isAttrs attrValues;
+  inherit (builtins) mapAttrs concatMap attrValues;
   lib = import "${nixpkgs}/lib";
   mkSystem = import "${nixpkgs}/nixos/lib/eval-config.nix";
   systemOf = host: host.system or "x86_64-linux";
@@ -19,6 +19,16 @@
   pkgsBySystem =
     lib.genAttrs (lib.unique (map systemOf (attrValues hosts)))
     (system: nixpkgs.legacyPackages.${system} or (import nixpkgs {inherit system;}));
+
+  select = name: importedModule:
+    lib.optional (importedModule ? all) importedModule.all
+    ++ (lib.optionals (importedModule ? these && importedModule ? "${name}") [
+      importedModule.these
+    ])
+    ++ (lib.optionals (importedModule ? others && !(importedModule ? "${name}")) [
+      importedModule.others
+    ])
+    ++ (lib.optional (importedModule ? "${name}") importedModule."${name}");
 in
   mapAttrs
   (name: value: let
@@ -29,24 +39,7 @@ in
       inherit system;
       pkgs = value.pkgs or pkgsBySystem.${system};
       modules =
-        concatMap (importedModule:
-          if isAttrs importedModule
-          then
-            [
-              (importedModule.all or {})
-            ]
-            ++ (lib.optionals (hasAttr "these" importedModule && hasAttr name importedModule) [
-              importedModule.these
-            ])
-            ++ (lib.optionals (hasAttr "others" importedModule && !(hasAttr name importedModule)) [
-              importedModule.others
-            ])
-            ++ [
-              (importedModule."${name}" or {})
-            ]
-          else [
-          ])
-        importedModules
+        concatMap (select name) importedModules
         ++ (value.modules or []);
       specialArgs = value.specialArgs or {};
     })
