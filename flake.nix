@@ -27,13 +27,14 @@
         };
       });
       lib = mkLib {inherit nixpkgs;};
-      devShell = forAllSystems (system: pkgs:
-        pkgs.mkShell {
+      devShells = forAllSystems (system: pkgs: {
+        default = pkgs.mkShell {
           nativeBuildInputs = [
             pkgs.nixd
             pkgs.alejandra
             pkgs.harper
           ];
-        });
+        };
+      });
     };
 }
