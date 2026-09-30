@@ -77,7 +77,7 @@ sets them.
 
 ```nix
 tags = self: {
-    arm.pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    arm.pkgs = nixpkgs.legacyPackages.aarch64-linux;
     desktop = {
         build = true;
         parents = [self.arm];
