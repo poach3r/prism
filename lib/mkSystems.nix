@@ -54,6 +54,7 @@
     else tag // {inherit name build;};
 
   registry = let
+    # `self` is a self-referrential fixed point to allow for parenting
     self = mapAttrs checkTag (tags self);
   in
     self;
@@ -71,6 +72,7 @@
     (tag.parents or []);
 
   # Names of `root` and every ancestor reachable through parents accepted by `follow`.
+  # `genericClosure` does graph traversal and `follow` decides what counts as an edge.
   walk = follow: root:
     map (entry: entry.key) (genericClosure {
       startSet = [{key = root.name;}];
@@ -87,6 +89,8 @@
     (ancestorsOf root);
 
   # A value defined by a tag overrides any defined by that tag's ancestors.
+  # If two unrelated tags both define it, `nearest` has more than one entry,
+  # which is ambiguous.
   resolve = root: what: defines: get: fallback: let
     definers = filter (name: defines registry.${name}) (ancestorsOf root);
     overridden = definer: any (other: other != definer && elem definer (ancestorsOf registry.${other})) definers;

@@ -1,5 +1,7 @@
 let
-  npf = import ./lib/nixpkgs; # Functions of pkgs.lib
+  # Code for pkgs.lib functions this repo needs so it # doesn't depend on a
+  # consumer's nixpkgs.
+  npf = import ./lib/nixpkgs;
   childTagsOf = import ./lib/childTagsOf.nix;
 in {
   inherit childTagsOf;
