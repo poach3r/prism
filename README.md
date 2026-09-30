@@ -233,6 +233,17 @@ Modules are attribute sets of tag sections. Each section is standard
 configuration passed to `mkSystem` which only applies to systems where its tag
 is selected.
 
+`enable ? true` is reserved on every module and determines whether or not a
+module is evaluated.
+
+```nix
+{
+    # Doesn't get evaluated, won't install hyprland
+    enable = false;
+    all.programs.hyprland.enable = true;
+}
+```
+
 ## lib.presets
 1. `all` a tag to be used as a parent of every system.
 2. `these` a tag which is active when the module has a section for any of the

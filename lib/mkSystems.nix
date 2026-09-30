@@ -32,6 +32,7 @@
   settingNames = attrNames defaults;
   moduleLists = {inherit modules extraModules;};
   tagFields = ["parents" "build" "select"] ++ settingNames ++ attrNames moduleLists;
+  moduleFields = ["enable"];
 
   fail = message: throw "prism: ${message}";
   list = concatStringsSep ", ";
@@ -120,7 +121,7 @@
 
   importModule = path: let
     module = import path;
-    undefinedTags = filter (key: !(registry ? ${key})) (attrNames module);
+    undefinedTags = filter (key: !(elem key moduleFields) && !(registry ? ${key})) (attrNames module);
   in
     if !isAttrs module
     then fail "${toString path} must be an attribute set of tag sections"
@@ -174,7 +175,7 @@
     cycle = cyclicTags root;
     rootMkSystem = settingOf root "mkSystem";
     rootPkgs = settingOf root "pkgs";
-    prismModules = map importModule (uniquePaths (mergedOf root "modules"));
+    prismModules = filter (entry: entry.module.enable or true) (map importModule (uniquePaths (mergedOf root "modules")));
   in
     if cycle != []
     then fail "tags ${list cycle} form a cycle"
