@@ -1,36 +1,121 @@
-# About
-`prism` is a library to facilitate complex multi-host NixOS configurations. 
-Loosely inspired by the dendritic pattern, all modules specificy the host 
-that the configurations therein apply to.
+# prism
+`prism` is a library for multi-host NixOS and nix-darwin configurations. Rather
+than writing a configuration per host, you describe your machines with tags,
+and every module splits (or refracts) its configuration across those tags.
 
-This project was formerly known as `booyah`. It has been renamed to `prism`
-after I got peer-pressured. The name comes from how a module can be split (or 
-refracted) into various different configurations.
+```nix
+# flake.nix
+tags = self: {
+    graphical = {};
+    laptop = {
+        build = true;
+        parents = [self.graphical];
+    };
+    desktop = {
+        build = true;
+        parents = [self.graphical];
+    };
+    server.build = true;
+};
+```
 
-# Installation
-## Flakes
+```nix
+# modules/bluetooth.nix
+{
+    graphical.hardware.bluetooth.enable = true;
+    desktop.hardware.bluetooth.powerOnBoot = true;
+}
+```
+
+`laptop` and `desktop` get bluetooth, only `desktop` powers it on at boot, and
+`server` gets neither.
+
+# Features
+## Tags with multiple parents
+A tag selects its own sections along with those of every ancestor. Tags can
+have any number of parents, so machines are described by what they are rather
+than by which list they appear in.
+
+```nix
+tags = self: {
+    graphical = {};
+    workstation.parents = [self.graphical];
+    gaming.parents = [self.graphical];
+    laptop = {
+        build = true;
+        parents = [self.workstation];
+    };
+    desktop = {
+        build = true;
+        parents = [self.workstation self.gaming];
+    };
+    deck = {
+        build = true;
+        parents = [self.gaming];
+    };
+};
+```
+
+## Conditional tags
+A tag with `select` decides whether it's active on a per-module basis. Here,
+`chaotic` applies to every system with the tag, except in modules
+which also configure `gaming`, where it only applies to gaming systems.
+
+```nix
+chaotic.select = {module, rootTags, ...}:
+    !(module ? ${self.gaming.name}) || builtins.elem self.gaming.name rootTags;
+```
+
+## Settings per tag
+`pkgs`, `mkSystem`, and `specialArgs` are set once in `mkSystems` and may be
+overridden by any tag. Systems inherit them from their most specific tag which
+sets them.
+
+```nix
+tags = self: {
+    arm.pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    desktop = {
+        build = true;
+        parents = [self.arm];
+    };
+    mac = {
+        build = true;
+        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+        mkSystem = nix-darwin.lib.darwinSystem;
+    };
+};
+```
+
+## Modules per tag
+Tags can bring their own `modules` and `extraModules`, so external modules
+follow the tag which uses them instead of being listed for every host.
+
+```nix
+agenix.extraModules = [agenix.nixosModules.default];
+```
+
+# Tutorials
+## Installation
+### Flakes
 1. Add `prism` to your inputs:
 ```nix
 {
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
-        prism = {
-            url = "git+https://codeberg.org/poacher/prism.git";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
+        prism.url = "git+https://codeberg.org/poacher/prism.git";
     };
 }
 ```
 
 2. Create your NixOS configurations with `mkSystems`:
 ```nix
-{ 
+{
     outputs = {nixpkgs, prism, ...}: {
         nixosConfigurations = prism.lib.mkSystems {
-            foo = {
-                # ...
-            };
-            bar = {
+            mkSystem = nixpkgs.lib.nixosSystem;
+            pkgs = nixpkgs.legacyPackages.x86_64-linux;
+            modules = prism.lib.recursivelyImport [./modules];
+            tags = self: {
                 # ...
             };
         };
@@ -38,10 +123,10 @@ refracted) into various different configurations.
 }
 ```
 
-## Non-Flakes
+### Non-Flakes
 1. Pin `prism` with your pinner of choice, I'll be using `npins`:
 ```sh
-npins add forgejo codeberg.org poacher prism -b main
+npins add git https://tangled.org/poacher.dev/prism -b main
 ```
 
 2. Import `prism` in your NixOS entry-point:
@@ -61,71 +146,111 @@ let
     # ...
 in {
     nixosConfigurations = prism.mkSystems {
-        foo = {
+        mkSystem = import "${nixpkgs}/nixos/lib/eval-config.nix";
+        pkgs = import nixpkgs {};
+        modules = prism.recursivelyImport [./modules];
+        tags = self: {
             # ...
         };
-        bar = {
-            # ...
-        };
-    }:
-}
-```
-
-# Usage
-## mkSystems
-`mkSystems` is a function which creates NixOS configurations based on the provided hosts.
-Each host accepts the following arguments:
-
-1. `paths ? []` module paths to be automatically imported and parsed. Only modules in the proper format (attribute sets with `all` and/or host keys) will be applied.
-2. `modules ? []` non-prism modules to be manually imported.
-3. `specialArgs ? {}` arguments to be passed to every module.
-4. `system ? "x86_64-linux"` defines the system arch.
-5. `pkgs` is the pkgs used by this host.
-6. `mkSystem` is the function used internally to create the system. On NixOS this should be `nixpkgs.lib.nixosSystem`, on Darwin this should be set to `nix-darwin.lib.darwinSystem`.
-
-### Example
-```nix
-nixosConfigurations = mkSystems {
-    desktop = {
-        inherit pkgs;
-        mkSystem = nixpkgs.lib.nixosSystem;
-        paths = [./modules];
-        modules = [hjem.nixosModules.default];
-        specialArgs = {inherit myPkgs;};
     };
 }
 ```
 
-## recursivelyImport
-`recursivelyImport` is used internally to import `paths`. It accepts a list of
-paths.
+## Getting Started
+1. Describe your machines. Every tag with `build = true` becomes a system, and
+the `all` preset allows them to share configs:
+```nix
+tags = self: {
+    inherit (prism.lib.presets) all;
+    graphical.parents = [self.all];
+    laptop = {
+        build = true;
+        parents = [self.all self.graphical];
+    };
+    server = {
+        build = true;
+        parents = [self.all];
+    };
+};
+```
+
+2. Write a module. Each section is standard NixOS configuration, keyed by the
+tag it applies to:
+```nix
+# modules/desktop-environment.nix
+{
+    all.services.openssh.enable = true;
+    laptop.services.power-profiles-daemon.enable = true;
+    graphical = {pkgs, ...}: {
+        services.desktopManager.plasma6.enable = true;
+        environment.systemPackages = [pkgs.firefox];
+    };
+}
+```
+
+# Reference
+## mkSystems
+`mkSystems` creates a system for every tag with `build = true`. It accepts the
+following arguments:
+
+1. `tags` a function from the finished tag set (`self`) to tag definitions.
+2. `modules ? []` prism module files.
+3. `extraModules ? []` non-prism modules imported into every system.
+4. `mkSystem` the function used to create each system. On NixOS this should
+be `nixpkgs.lib.nixosSystem`, on Darwin this should be
+`nix-darwin.lib.darwinSystem`.
+5. `pkgs ? null` the nixpkgs instance, set as `nixpkgs.pkgs`.
+6. `specialArgs ? {}` arguments passed to every module.
+
+## Tags
+Each tag is an attribute set which may contain:
+
+1. `parents ? []` tags whose sections are also selected, referenced through
+`self` (e.g. `self.graphical`).
+2. `build ? false` whether this tag is a system.
+3. `select` a function deciding, per module, whether this tag is active.
+4. `mkSystem`, `pkgs`, `specialArgs` overrides of the `mkSystems` defaults.
+5. `modules`, `extraModules` additions to the `mkSystems` lists.
+
+## select
+`select` receives the following and returns a bool:
+
+1. `root` the tag being built.
+2. `rootTags` the names of `root` and all of its ancestors.
+3. `tag` the tag being selected.
+4. `module` the prism module being selected from.
+5. `path` the path of that module.
+6. `tags` every tag.
 
 ## Modules
-Modules are now defined as attribute sets with host dependant configuration.
-Creating an attribute set for a host with typical NixOS configuration inside
-will only apply it to that host. Additionally, the host `all` can be used
-to apply it to all hosts. The `these` key applies its configuration to every
-host that is explicitly configured in the same module, while `others` applies
-to every host not configured in it. Host configurations are able to be
-passed arguments such as `pkgs`, `lib`, and everything specified in `specialArgs`.
+Modules are attribute sets of tag sections. Each section is standard
+configuration passed to `mkSystem` which only applies to systems where its tag
+is selected.
 
-### Example
-`bluetooth.nix`
+## lib.presets
+1. `all` a tag to be used as a parent of every system.
+2. `these` a tag which is active when the module has a section for any of the
+built tag's tags, other than `all`, `these`, and `others`.
+3. `others` a tag which is active when `these` isn't.
+
+## lib.closureOf
+`closureOf` returns the names of a tag and all of its parents. It can be used
+to pass a system's tags to its modules:
+
 ```nix
-{
-    # Enable bluetooth on my laptop and desktop.
-    these = {pkgs, ...}: {
-      environment.systemPackages = [pkgs.blueman];
-      hardware.bluetooth.enable = true;
-    };
-
-    # Dummy configuration for `these`.
-    laptop = {};
-    
-    # Enable powerOnBoot for my desktop, but not my laptop to save battery life.
-    desktop.hardware.bluetooth.powerOnBoot = true;
-}
+laptop = {
+    build = true;
+    specialArgs.tags = prism.lib.closureOf self.laptop;
+};
 ```
+
+## lib.recursivelyImport
+`recursivelyImport` returns every `.nix` file within a list of paths. Files
+starting with `_` are ignored.
+
+## readOnlyPkgs
+On NixOS, importing `nixpkgs.nixosModules.readOnlyPkgs` through `extraModules` is
+recommended as it prevents modules from reconfiguring `pkgs`.
 
 # Living Examples
 `prism` is used in the following configs:
@@ -133,3 +258,7 @@ passed arguments such as `pkgs`, `lib`, and everything specified in `specialArgs
 2. [zushi](https://codeberg.org/zushi/nixos-config)
 
 If you would like your config added here then please open an issue or PR.
+
+# History
+This project was formerly known as `booyah`. It has been renamed to `prism`
+after I got peer-pressured.
