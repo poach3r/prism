@@ -1,63 +1,59 @@
 {
   "nodes": {
     "nixhooks": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
       "locked": {
-        "lastModified": 1625557891,
-        "narHash": "sha256-O8/MWsPBGhhyPoPLHZAuoZiiHo9q6FLlEeIDEXuj6T4=",
-        "owner": "divnix",
-        "repo": "blank",
-        "rev": "5a5d2684073d9f563072ed07c871d577a6c614a8",
-        "type": "github"
+        "lastModified": 1790778492,
+        "narHash": "sha256-s7/FJeOJsK24UYqi9I0KY/av4bJtVblAAgNKWfZ5YSo=",
+        "ref": "refs/heads/main",
+        "rev": "35313de1813e9dc36ad3394065c3143f49fdf191",
+        "revCount": 43,
+        "type": "git",
+        "url": "https://tangled.org/poacher.dev/nixhooks"
       },
       "original": {
-        "owner": "divnix",
-        "repo": "blank",
-        "type": "github"
+        "type": "git",
+        "url": "https://tangled.org/poacher.dev/nixhooks"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1625557891,
-        "narHash": "sha256-O8/MWsPBGhhyPoPLHZAuoZiiHo9q6FLlEeIDEXuj6T4=",
-        "owner": "divnix",
-        "repo": "blank",
-        "rev": "5a5d2684073d9f563072ed07c871d577a6c614a8",
+        "lastModified": 1789370336,
+        "narHash": "sha256-6RSEDHIWQtesQKWSu5qRai8L2h4KgCgMEfJHstW99G4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "c7def046b9a883d46974757852106483d741586f",
         "type": "github"
       },
       "original": {
-        "owner": "divnix",
-        "repo": "blank",
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1790652569,
+        "narHash": "sha256-641r7xrlSOHYoktL9/aArPIYNgZJ9eM5URzSEOtPJDY=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "b6c8664de9b6cc07fe5666a29f91884ba81197c4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
         "nixhooks": "nixhooks",
-        "nixpkgs": "nixpkgs",
-        "scoped-flakes": "scoped-flakes"
-      }
-    },
-    "scoped-flakes": {
-      "inputs": {
-        "nixhooks": [
-          "nixhooks"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1790542265,
-        "narHash": "sha256-03NsZKhPnve2uls3aEK2Miv6smkGKpdr8hEDY4eNtj4=",
-        "ref": "refs/heads/main",
-        "rev": "3a91fbc84478f2caff0685fb005b94c5a6ee77fe",
-        "revCount": 4,
-        "type": "git",
-        "url": "https://tangled.org/poacher.dev/scoped-flakes"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://tangled.org/poacher.dev/scoped-flakes"
+        "nixpkgs": "nixpkgs_2"
       }
     }
   },
