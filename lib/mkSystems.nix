@@ -1,4 +1,7 @@
-{optional}: {
+{
+  optional,
+  childTagsOf,
+}: {
   tags,
   mkSystem ? null,
   pkgs ? null,
@@ -35,6 +38,10 @@
 
   checkTag = name: tag: let
     unknownFields = filter (field: !(elem field tagFields)) (attrNames tag);
+    build =
+      if tag ? build
+      then tag.build
+      else !(tag ? select) && isChildTag name;
   in
     if !isAttrs tag
     then fail "tag '${name}' must be an attribute set"
@@ -44,12 +51,15 @@
     then fail "tag '${name}' is built, so it can't have a select"
     else if tag ? select && tag ? modules
     then fail "tag '${name}' has a select, so it can't set modules"
-    else tag // {inherit name;};
+    else tag // {inherit name build;};
 
   registry = let
     self = mapAttrs checkTag (tags self);
   in
     self;
+
+  childTags = childTagsOf registry;
+  isChildTag = name: elem name childTags;
 
   parentsOf = tag:
     map (

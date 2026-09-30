@@ -211,7 +211,9 @@ Each tag is an attribute set which may contain:
 
 1. `parents ? []` tags whose sections are also selected, referenced through
 `self` (e.g. `self.graphical`).
-2. `build ? false` whether this tag is a system.
+2. `build` whether this tag is a system. Defaults to `true` if the tag is a
+child tag (no other tag lists it as a parent) and doesn't have a `select`,
+otherwise `false`.
 3. `select` a function deciding, per module, whether this tag is active.
 4. `mkSystem`, `pkgs`, `specialArgs` overrides of the `mkSystems` defaults.
 5. `modules`, `extraModules` additions to the `mkSystems` lists.
@@ -245,6 +247,17 @@ to pass a system's tags to its modules:
 laptop = {
     build = true;
     specialArgs.tags = prism.lib.closureOf self.laptop;
+};
+```
+
+## lib.childTagsOf
+`childTagsOf` returns the names of every tag in a tag set that isn't used as
+another tag's parent. `mkSystems` uses this to default `build` for child tags:
+
+```nix
+tags = self: {
+    # ...
+    specialArgs.childTags = prism.lib.childTagsOf self;
 };
 ```
 
