@@ -1,3 +1,7 @@
+> Development takes place on [Tangled](https://tangled.org/poacher.dev/prism),
+  however, I do maintain a [GitHub mirror](https://github.com/poach3r/prism).
+  Please make PRs to the Tangled repository.
+
 # prism
 `prism` is a library for multi-host NixOS and nix-darwin configurations. Rather
 than writing a configuration per host, you describe your machines with tags,
