@@ -34,6 +34,25 @@ tags = self: {
 `laptop` and `desktop` get bluetooth, only `desktop` powers it on at boot, and
 `server` gets neither.
 
+# Mental Model
+Think of tags like CSS classes and modules like stylesheets: a machine is
+built from the tags it has, and each module section is a rule scoped to one
+tag. A tag inherits every section its ancestors define through `parents`, the
+same way an element inherits rules from every class it carries.
+
+Sections don't override each other, they stack: `graphical` and `desktop` can
+each add their own bluetooth config to the same machine, just like two CSS
+classes both styling the same element. Settings like `pkgs` or `mkSystem` are
+different, they're single-valued, so something has to win. There the closer
+tag overrides the one further up the tree, but if a tag would inherit a
+setting from two ancestors that aren't related to each other, prism refuses
+to guess, unlike CSS's "last one wins." That's an error, and you fix it by
+setting the value directly on the tag doing the inheriting.
+
+`select` is the other piece of the model: it lets a tag decide, per module,
+whether it's active, rather than being all-or-nothing across every module it
+touches.
+
 # Features
 ## Tags with multiple parents
 A tag selects its own sections along with those of every ancestor. Tags can
@@ -283,7 +302,6 @@ recommended as it prevents modules from reconfiguring `pkgs`.
 # Living Examples
 `prism` is used in the following configs:
 1. [mine](https://tangled.org/poacher.dev/nixos-config)
-2. [zushi](https://codeberg.org/zushi/nixos-config)
 
 If you would like your config added here then please open an issue or PR.
 
