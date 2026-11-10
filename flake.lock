@@ -50,10 +50,29 @@
         "type": "github"
       }
     },
+    "parsnip": {
+      "inputs": {
+        "nixpkgs": []
+      },
+      "locked": {
+        "lastModified": 1794266376,
+        "narHash": "sha256-IcFG5EE9Yu7/Y92oi7zQUelFKi7OLJPow0Db9XLgD/c=",
+        "ref": "refs/heads/main",
+        "rev": "76d6e8274961e38904be29a9c9be3888f5a6f393",
+        "revCount": 1,
+        "type": "git",
+        "url": "https://tangled.org/poacher.dev/parsnip"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://tangled.org/poacher.dev/parsnip"
+      }
+    },
     "root": {
       "inputs": {
         "nixhooks": "nixhooks",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_2",
+        "parsnip": "parsnip"
       }
     }
   },

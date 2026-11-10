@@ -43,15 +43,10 @@ same way an element inherits rules from every class it carries.
 Sections don't override each other, they stack: `graphical` and `desktop` can
 each add their own bluetooth config to the same machine, just like two CSS
 classes both styling the same element. Settings like `pkgs` or `mkSystem` are
-different, they're single-valued, so something has to win. There the closer
+different, they're single-valued, so something has to win. There, the closer
 tag overrides the one further up the tree, but if a tag would inherit a
-setting from two ancestors that aren't related to each other, prism refuses
-to guess, unlike CSS's "last one wins." That's an error, and you fix it by
-setting the value directly on the tag doing the inheriting.
-
-`select` is the other piece of the model: it lets a tag decide, per module,
-whether it's active, rather than being all-or-nothing across every module it
-touches.
+setting from two ancestors that aren't related to each other then prism throws
+an error.
 
 # Features
 ## Tags with multiple parents
@@ -263,6 +258,23 @@ module is evaluated.
 }
 ```
 
+## Parsnip modules
+Modules can also be written in [Parsnip](https://tangled.org/poacher.dev/parsnip),
+with the same shape of tag sections:
+
+```clojure
+; modules/bluetooth.psn
+{:graphical {:hardware {:bluetooth {:enable true}}}
+ :desktop {:hardware {:bluetooth {:powerOnBoot true}}}}
+```
+
+Files built ahead of time with `parsnip build` are used automatically.
+
+Without flakes, pass Parsnip when importing prism:
+```nix
+prism = import sources.prism {parsnip = import sources.parsnip;};
+```
+
 ## lib.presets
 1. `all` a tag to be used as a parent of every system.
 2. `these` a tag which is active when the module has a section for any of the
@@ -292,8 +304,8 @@ tags = self: {
 ```
 
 ## lib.recursivelyImport
-`recursivelyImport` returns every `.nix` file within a list of paths. Files
-starting with `_` are ignored.
+`recursivelyImport` returns every `.nix` and `.psn` file within a list of
+paths. Files starting with `_` and `.parsnip` directories are ignored.
 
 ## readOnlyPkgs
 On NixOS, importing `nixpkgs.nixosModules.readOnlyPkgs` through `extraModules` is

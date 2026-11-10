@@ -2,11 +2,17 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
     nixhooks.url = "git+https://tangled.org/poacher.dev/nixhooks";
+
+    parsnip = {
+      url = "git+https://tangled.org/poacher.dev/parsnip";
+      inputs.nixpkgs.follows = "";
+    };
   };
 
   outputs = {
     nixpkgs,
     nixhooks,
+    parsnip,
     ...
   }: let
     systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
@@ -24,7 +30,7 @@
         };
       };
   in {
-    lib = import ./.;
+    lib = import ./lib {parsnip = parsnip.lib;};
     packages = forAllSystems (system: (hooks system).packages);
     apps = forAllSystems (system: (hooks system).apps);
     devShells = forAllSystems (system: let

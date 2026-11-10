@@ -1,6 +1,8 @@
 {
   optional,
   childTagsOf,
+  hasSuffix,
+  importParsnip,
 }: {
   tags,
   mkSystem ? null,
@@ -120,7 +122,10 @@
       argNames);
 
   importModule = path: let
-    module = import path;
+    module =
+      if hasSuffix ".psn" (toString path)
+      then importParsnip path
+      else import path;
     undefinedTags = filter (key: !(elem key moduleFields) && !(registry ? ${key})) (attrNames module);
   in
     if !isAttrs module
