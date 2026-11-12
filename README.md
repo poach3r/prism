@@ -34,19 +34,10 @@ tags = self: {
 `laptop` and `desktop` get bluetooth, only `desktop` powers it on at boot, and
 `server` gets neither.
 
-# Mental Model
 Think of tags like CSS classes and modules like stylesheets: a machine is
 built from the tags it has, and each module section is a rule scoped to one
 tag. A tag inherits every section its ancestors define through `parents`, the
-same way an element inherits rules from every class it carries.
-
-Sections don't override each other, they stack: `graphical` and `desktop` can
-each add their own bluetooth config to the same machine, just like two CSS
-classes both styling the same element. Settings like `pkgs` or `mkSystem` are
-different, they're single-valued, so something has to win. There, the closer
-tag overrides the one further up the tree, but if a tag would inherit a
-setting from two ancestors that aren't related to each other then prism throws
-an error.
+same way an element inherits rules from every class it carries. 
 
 # Features
 ## Tags with multiple parents
